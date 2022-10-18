@@ -17,7 +17,7 @@ mestodb.connect(MONGO_URL);
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '634e96f61e27bc77a373ffbd'
+    _id: '634e96f61e27bc77a373ffbd',
   };
   next();
 });
