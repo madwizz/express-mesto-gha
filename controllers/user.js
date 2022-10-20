@@ -27,27 +27,24 @@ module.exports.getUser = async (req, res) => {
         message: 'User is not found',
       });
     }
-    res.send(user);
+    return res.send(user);
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(INCORRECT_DATA_ERROR_CODE).json({
+      return res.status(INCORRECT_DATA_ERROR_CODE).json({
         message: 'Invalid data is received',
       });
     }
-    res.status(DEFAULT_ERROR_CODE).json({
+    return res.status(DEFAULT_ERROR_CODE).json({
       message: 'User is not found',
     });
   }
-  return null;
 };
 
 module.exports.createUser = async (req, res) => {
   try {
     const { name, about, avatar } = req.body;
     const user = await User.create({ name, about, avatar });
-    res.send({
-      message: 'User is successfully created',
-    }, user);
+    res.send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
       res.status(INCORRECT_DATA_ERROR_CODE).json({

@@ -21,9 +21,7 @@ module.exports.createCard = async (req, res) => {
   try {
     const { name, link } = req.body;
     const card = await Card.create({ name, link, owner: req.user._id });
-    res.send({
-      message: 'Card is successfully created',
-    }, card);
+    res.send(card);
   } catch (err) {
     if (err.name === 'ValidationError') {
       res.status(INCORRECT_DATA_ERROR_CODE).json({
@@ -46,20 +44,19 @@ module.exports.deleteCard = async (req, res) => {
       });
     }
     await Card.findByIdAndRemove(req.params.cardId);
-    res.send({
+    return res.send({
       message: 'Card is deleted',
     });
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(INCORRECT_DATA_ERROR_CODE).json({
+      return res.status(INCORRECT_DATA_ERROR_CODE).json({
         message: 'Invalid data is received',
       });
     }
-    res.status(DEFAULT_ERROR_CODE).json({
+    return res.status(DEFAULT_ERROR_CODE).json({
       message: 'Card is not found',
     });
   }
-  return null;
 };
 
 const handleCardLike = async (req, res, options) => {
@@ -75,18 +72,17 @@ const handleCardLike = async (req, res, options) => {
         message: 'Card is not found',
       });
     }
-    res.send(cardUpdate);
+    return res.send(cardUpdate);
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(INCORRECT_DATA_ERROR_CODE).json({
+      return res.status(INCORRECT_DATA_ERROR_CODE).json({
         message: 'Invalid data is received',
       });
     }
-    res.status(DEFAULT_ERROR_CODE).json({
+    return res.status(DEFAULT_ERROR_CODE).json({
       message: 'Card was not updated',
     });
   }
-  return null;
 };
 
 module.exports.likeCard = (req, res) => {
