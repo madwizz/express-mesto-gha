@@ -44,10 +44,10 @@ module.exports.getUser = async (req, res) => {
 module.exports.createUser = async (req, res) => {
   try {
     const { name, about, avatar } = req.body;
-    User.create({ name, about, avatar });
+    const user = await User.create({ name, about, avatar });
     res.send({
       message: 'User is successfully created',
-    });
+    }, user);
   } catch (err) {
     if (err.name === 'ValidationError') {
       res.status(INCORRECT_DATA_ERROR_CODE).json({

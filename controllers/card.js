@@ -20,10 +20,10 @@ module.exports.getCards = async (req, res) => {
 module.exports.createCard = async (req, res) => {
   try {
     const { name, link } = req.body;
-    await Card.create({ name, link, owner: req.user._id });
+    const card = await Card.create({ name, link, owner: req.user._id });
     res.send({
       message: 'Card is successfully created',
-    });
+    }, card);
   } catch (err) {
     if (err.name === 'ValidationError') {
       res.status(INCORRECT_DATA_ERROR_CODE).json({
@@ -69,7 +69,7 @@ const handleCardLike = async (req, res, options) => {
       req.params.cardId,
       { [action]: { likes: req.user._id } },
       { new: true },
-    ).populate([{ path: 'likes', model: 'user' }]);
+    );
     if (!cardUpdate) {
       return res.status(NOT_FOUND_ERROR_CODE).json({
         message: 'Card is not found',
