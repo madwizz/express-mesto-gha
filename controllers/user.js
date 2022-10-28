@@ -1,64 +1,73 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const BadRequestError = require('../utils/classErrors/BadRequestError');
+const MatchedError = require('../utils/classErrors/MatchedError');
+const NotFoundError = require('../utils/classErrors/NotFoundError');
 
-const {
-  INCORRECT_DATA_ERROR_CODE,
-  NOT_FOUND_ERROR_CODE,
-  DEFAULT_ERROR_CODE,
-} = require('../utils/errors');
+const { SECRET_JWT } = ('../utils/constants');
 
-module.exports.getUsers = async (req, res) => {
+module.exports.getUsers = async (req, res, next) => {
   try {
     const user = await User.find({});
     res.send(user);
   } catch (err) {
-    res.status(DEFAULT_ERROR_CODE).json({
-      message: 'Cannot get users',
-    });
+    next(err);
   }
 };
 
-module.exports.getUser = async (req, res) => {
+module.exports.getUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const user = await User.findById(id);
 
     if (!user) {
-      return res.status(NOT_FOUND_ERROR_CODE).json({
-        message: 'User is not found',
-      });
+      return next(new NotFoundError('User with that id is not found'));
     }
     return res.send(user);
   } catch (err) {
     if (err.name === 'CastError') {
-      return res.status(INCORRECT_DATA_ERROR_CODE).json({
-        message: 'Invalid data is received',
-      });
+      next(new BadRequestError('Invalid user id format'));
+    } else {
+      next(err);
     }
-    return res.status(DEFAULT_ERROR_CODE).json({
-      message: 'User is not found',
-    });
   }
+  return null;
 };
 
-module.exports.createUser = async (req, res) => {
+module.exports.createUser = async (req, res, next) => {
   try {
-    const { name, about, avatar } = req.body;
-    const user = await User.create({ name, about, avatar });
+    const {
+      name, about, avatar, email, password
+    } = req.body;
+    const hash = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      name, about, avatar, email, password: hash,
+    });
     res.send(user);
   } catch (err) {
-    if (err.name === 'ValidationError') {
-      res.status(INCORRECT_DATA_ERROR_CODE).json({
-        message: 'Invalid data is received',
-      });
-      return;
+    if (err.code === 11000) {
+      next(new MatchedError('User with that email already exists'));
+    } else if (err.name === 'ValidationError') {
+      next(new BadRequestError('Invalid data is received'));
+    } else {
+      next(err);
     }
-    res.status(DEFAULT_ERROR_CODE).json({
-      message: 'User was not created',
-    });
   }
 };
 
-module.exports.updateUserInfo = async (req, res) => {
+module.exports.login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findUser(email, password);
+    const token = jwt.sign({ _id: user._id }, SECRET_JWT, { expiresIn: '7d'});
+    res.send(token);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.updateUserInfo = async (req, res, next) => {
   try {
     const { name, about } = req.body;
     const userInfoUpdate = await User.findByIdAndUpdate(
@@ -69,18 +78,16 @@ module.exports.updateUserInfo = async (req, res) => {
     res.send(userInfoUpdate);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(INCORRECT_DATA_ERROR_CODE).json({
-        message: 'Invalid data is received',
-      });
-      return;
+      next(new BadRequestError('Invalid data is received'));
+    } else if (err.name === 'CastError') {
+      next(new BadRequestError('User _id is not correct'))
+    } else {
+      next(err);
     }
-    res.status(DEFAULT_ERROR_CODE).json({
-      message: 'User Info was not updated',
-    });
   }
 };
 
-module.exports.updateUserAvatar = async (req, res) => {
+module.exports.updateUserAvatar = async (req, res, next) => {
   try {
     const { avatar } = req.body;
     const avatarUpdate = await User.findByIdAndUpdate(
@@ -94,13 +101,18 @@ module.exports.updateUserAvatar = async (req, res) => {
     res.send(avatarUpdate);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(INCORRECT_DATA_ERROR_CODE).json({
-        message: 'Invalid data is received',
-      });
-      return;
+      next(new BadRequestError('Invalid data is received'));
+    } else {
+      next(err);
     }
-    res.status(DEFAULT_ERROR_CODE).json({
-      message: 'User Avatar was not updated',
-    });
+  }
+};
+
+module.exports.getMyInfo = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ _id: req.user._id });
+    res.send(user);
+  } catch (err) {
+    return next(err);
   }
 };

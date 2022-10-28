@@ -1,4 +1,7 @@
 const Card = require('../models/card');
+const BadRequestError = require('../utils/classErrors/BadRequestError');
+const NotFoundError = require('../utils/classErrors/NotFoundError');
+const ForbiddenError = require('../utils/classErrors/ForbiddenError');
 
 const {
   INCORRECT_DATA_ERROR_CODE,
@@ -6,28 +9,23 @@ const {
   DEFAULT_ERROR_CODE,
 } = require('../utils/errors');
 
-module.exports.getCards = async (req, res) => {
+module.exports.getCards = async (req, res, next) => {
   try {
     const cards = await Card.find({});
     res.send(cards);
   } catch (err) {
-    res.status(DEFAULT_ERROR_CODE).json({
-      message: 'Cannot get cards',
-    });
+    next(err);
   }
 };
 
-module.exports.createCard = async (req, res) => {
+module.exports.createCard = async (req, res, next) => {
   try {
     const { name, link } = req.body;
     const card = await Card.create({ name, link, owner: req.user._id });
     res.send(card);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(INCORRECT_DATA_ERROR_CODE).json({
-        message: 'Invalid data is received',
-      });
-      return;
+      next(new BadRequestError('Invalid data is received'));
     }
     res.status(DEFAULT_ERROR_CODE).json({
       message: 'Failed to create card',
@@ -35,13 +33,14 @@ module.exports.createCard = async (req, res) => {
   }
 };
 
-module.exports.deleteCard = async (req, res) => {
+module.exports.deleteCard = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId);
     if (!card) {
-      return res.status(NOT_FOUND_ERROR_CODE).json({
-        message: 'Card is not found',
-      });
+      return new NotFoundError('Card is not found');
+    }
+    if (card.owner.toString() !== req.params.cardId) {
+      return new ForbiddenError('It is not allowed to delete cards which you do not own')
     }
     await Card.findByIdAndRemove(req.params.cardId);
     return res.send({
@@ -49,17 +48,15 @@ module.exports.deleteCard = async (req, res) => {
     });
   } catch (err) {
     if (err.name === 'CastError') {
-      return res.status(INCORRECT_DATA_ERROR_CODE).json({
-        message: 'Invalid data is received',
-      });
+      next(new BadRequestError('Card _id is not valid'));
+    } else {
+      next(err);
     }
-    return res.status(DEFAULT_ERROR_CODE).json({
-      message: 'Card is not found',
-    });
   }
+  return null;
 };
 
-const handleCardLike = async (req, res, options) => {
+const handleCardLike = async (req, res, options, next) => {
   try {
     const action = options.addLike ? '$addToSet' : '$pull';
     const cardUpdate = await Card.findByIdAndUpdate(
@@ -68,21 +65,17 @@ const handleCardLike = async (req, res, options) => {
       { new: true },
     );
     if (!cardUpdate) {
-      return res.status(NOT_FOUND_ERROR_CODE).json({
-        message: 'Card is not found',
-      });
+      return new NotFoundError('Card is not found');
     }
     return res.send(cardUpdate);
   } catch (err) {
     if (err.name === 'CastError') {
-      return res.status(INCORRECT_DATA_ERROR_CODE).json({
-        message: 'Invalid data is received',
-      });
+      next(new BadRequestError('Invalid data is received: wrong _id'));
+    } else {
+      next(err);
     }
-    return res.status(DEFAULT_ERROR_CODE).json({
-      message: 'Card was not updated',
-    });
   }
+  return null;
 };
 
 module.exports.likeCard = (req, res) => {
