@@ -43,15 +43,37 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.findUser = async (email, password) => {
+// userSchema.statics.findUser = async (email, password) => {
+//   let user;
+//   try {
+//     user = await this.findOne({ email }).select('+password');
+//   } catch (err) {
+//     return Promise.reject(new UnauthorizedError('Wrong email: this email does not exist'));
+//   }
+//   const match = await bcrypt.compare(password, user.password);
+//   if (!match) {
+//     return Promise.reject(new UnauthorizedError('Wrong password'));
+//   }
+//   return user;
+// };
+
+userSchema.statics.findUser = async function (email, password) {
   let user;
+
   try {
     user = await this.findOne({ email }).select('+password');
   } catch (err) {
+    console.log(err);
     return Promise.reject(new UnauthorizedError('Wrong email: this email does not exist'));
   }
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) {
+
+  try {
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      throw new UnauthorizedError('Wrong password');
+    }
+  } catch (err) {
+    console.log(err);
     return Promise.reject(new UnauthorizedError('Wrong password'));
   }
   return user;

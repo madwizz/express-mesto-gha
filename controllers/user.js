@@ -5,7 +5,7 @@ const BadRequestError = require('../utils/classErrors/BadRequestError');
 const MatchedError = require('../utils/classErrors/MatchedError');
 const NotFoundError = require('../utils/classErrors/NotFoundError');
 
-const { SECRET_JWT } = ('../utils/constants');
+const SECRET_JWT = ('../utils/constants');
 
 module.exports.getUsers = async (req, res, next) => {
   try {
@@ -65,6 +65,7 @@ module.exports.login = async (req, res, next) => {
     const token = jwt.sign({ _id: user._id }, SECRET_JWT, { expiresIn: '7d' });
     res.send(token);
   } catch (err) {
+    console.log(err);
     next(err);
   }
 };
