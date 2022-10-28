@@ -22,7 +22,7 @@ module.exports.getUser = async (req, res, next) => {
     const user = await User.findById(id);
 
     if (!user) {
-      return next(new NotFoundError('User with that id is not found'));
+      return new NotFoundError('User with that id is not found');
     }
     return res.send(user);
   } catch (err) {

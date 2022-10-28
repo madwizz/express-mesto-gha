@@ -1,7 +1,7 @@
 const { Joi, celebrate } = require('celebrate');
 const { URL_REGEXP } = require('../constants');
 
-module.exports.ValidateCardId = celebrate({
+module.exports.validateCardId = celebrate({
   params: Joi.object().keys({
     cardId: Joi.string().required().hex().length(24),
   }),

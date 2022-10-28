@@ -20,11 +20,11 @@ app.use(bodyParser.json());
 mestodb.connect(MONGO_URL);
 
 app.post('/signin', validateLogin, login);
-app.post('signup', validateRegister, createUser);
+app.post('/signup', validateRegister, createUser);
 
 app.use(auth);
-app.use('/', userRoutes);
-app.use('/', cardRoutes);
+app.use('/users', userRoutes);
+app.use('/cards', cardRoutes);
 app.use('*', () => {
   throw new NotFoundError('URL is not found. Check URL and request method');
 });

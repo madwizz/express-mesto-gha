@@ -9,10 +9,10 @@ const {
 } = require('../controllers/card');
 const { validateCardId, validateCardInfo } = require('../utils/validators/cardValidator');
 
-cardRoutes.get('/cards', getCards);
-cardRoutes.post('/cards', validateCardInfo, createCard);
-cardRoutes.delete('/cards/:cardId', deleteCard);
-cardRoutes.put('/cards/:cardId/likes', validateCardId, likeCard);
-cardRoutes.delete('/cards/:cardId/likes', validateCardId, dislikeCard);
+cardRoutes.get('/', getCards);
+cardRoutes.post('/', validateCardInfo, createCard);
+cardRoutes.delete('/:cardId', deleteCard);
+cardRoutes.put('/:cardId/likes', validateCardId, likeCard);
+cardRoutes.delete('/:cardId/likes', validateCardId, dislikeCard);
 
 module.exports = cardRoutes;
