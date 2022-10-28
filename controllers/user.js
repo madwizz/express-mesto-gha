@@ -45,7 +45,7 @@ module.exports.createUser = async (req, res, next) => {
       name, about, avatar, email, password: hash,
     });
     res.send({
-      name, about, avatar, email, password,
+      name, about, avatar, email,
     });
   } catch (err) {
     if (err.code === 11000) {
