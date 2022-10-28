@@ -3,10 +3,6 @@ const BadRequestError = require('../utils/classErrors/BadRequestError');
 const NotFoundError = require('../utils/classErrors/NotFoundError');
 const ForbiddenError = require('../utils/classErrors/ForbiddenError');
 
-const {
-  DEFAULT_ERROR_CODE,
-} = require('../utils/errors');
-
 module.exports.getCards = async (req, res, next) => {
   try {
     const cards = await Card.find({});
