@@ -10,9 +10,7 @@ module.exports = (req, res, next) => {
       return next(new UnauthorizedError('Authorization is required'));
     }
     payload = jwt.verify(token, SECRET_JWT);
-    console.log(payload);
   } catch (err) {
-    console.log(err);
     return next(new UnauthorizedError('Authorization is required'));
   }
   req.user = payload;

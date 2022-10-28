@@ -20,19 +20,16 @@ module.exports.getUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const user = await User.findById(id);
-
     if (!user) {
-      return new NotFoundError('User with that id is not found');
+      throw new NotFoundError('User with that id is not found');
     }
     return res.send(user);
   } catch (err) {
     if (err.name === 'CastError') {
-      next(new BadRequestError('Invalid user id format'));
-    } else {
-      next(err);
+      return next(new BadRequestError('Invalid user id format'));
     }
+    return next(err);
   }
-  return null;
 };
 
 module.exports.createUser = async (req, res, next) => {
