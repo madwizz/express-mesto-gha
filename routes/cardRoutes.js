@@ -7,7 +7,7 @@ const {
   likeCard,
   dislikeCard,
 } = require('../controllers/card');
-const {validateCardId, validateCardInfo } = require('../utils/validators/cardValidator')
+const { validateCardId, validateCardInfo } = require('../utils/validators/cardValidator');
 
 cardRoutes.get('/cards', getCards);
 cardRoutes.post('/cards', validateCardInfo, createCard);

@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
   try {
     const token = req.authorization.split(' ')[1];
     if (!token) {
-      return next(new UnauthorizedError('Authorization is required'))
+      return next(new UnauthorizedError('Authorization is required'));
     }
     payload = jwt.verify(token, SECRET_JWT);
   } catch (err) {

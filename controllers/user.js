@@ -38,7 +38,7 @@ module.exports.getUser = async (req, res, next) => {
 module.exports.createUser = async (req, res, next) => {
   try {
     const {
-      name, about, avatar, email, password
+      name, about, avatar, email, password,
     } = req.body;
     const hash = await bcrypt.hash(password, 10);
     const user = await User.create({
@@ -60,7 +60,7 @@ module.exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findUser(email, password);
-    const token = jwt.sign({ _id: user._id }, SECRET_JWT, { expiresIn: '7d'});
+    const token = jwt.sign({ _id: user._id }, SECRET_JWT, { expiresIn: '7d' });
     res.send(token);
   } catch (err) {
     next(err);
@@ -80,7 +80,7 @@ module.exports.updateUserInfo = async (req, res, next) => {
     if (err.name === 'ValidationError') {
       next(new BadRequestError('Invalid data is received'));
     } else if (err.name === 'CastError') {
-      next(new BadRequestError('User _id is not correct'))
+      next(new BadRequestError('User _id is not correct'));
     } else {
       next(err);
     }
@@ -111,7 +111,7 @@ module.exports.updateUserAvatar = async (req, res, next) => {
 module.exports.getMyInfo = async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.user._id });
-    res.send(user);
+    return res.send(user);
   } catch (err) {
     return next(err);
   }

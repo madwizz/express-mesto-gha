@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
-      validator: (v) => validator.isURL(v, { protocols: ['http', 'https'], require_protocol: true}),
+      validator: (v) => validator.isURL(v, { protocols: ['http', 'https'], require_protocol: true }),
       message: ({ value }) => `${value} - URL address is not valid. Expected URL address format: http(s)://(www).site.com`,
     },
   },
@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.findUser = async function (email, password) {
+userSchema.statics.findUser = async (email, password) => {
   try {
     const user = await this.findOne({ email }).select('+password');
     if (!user) {
@@ -59,6 +59,7 @@ userSchema.statics.findUser = async function (email, password) {
   } catch (err) {
     console.log(err);
   }
+  return null;
 };
 
 module.exports = mongoose.model('user', userSchema);

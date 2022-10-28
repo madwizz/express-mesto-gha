@@ -4,8 +4,6 @@ const NotFoundError = require('../utils/classErrors/NotFoundError');
 const ForbiddenError = require('../utils/classErrors/ForbiddenError');
 
 const {
-  INCORRECT_DATA_ERROR_CODE,
-  NOT_FOUND_ERROR_CODE,
   DEFAULT_ERROR_CODE,
 } = require('../utils/errors');
 
@@ -40,7 +38,7 @@ module.exports.deleteCard = async (req, res, next) => {
       return new NotFoundError('Card is not found');
     }
     if (card.owner.toString() !== req.params.cardId) {
-      return new ForbiddenError('It is not allowed to delete cards which you do not own')
+      return new ForbiddenError('It is not allowed to delete cards which you do not own');
     }
     await Card.findByIdAndRemove(req.params.cardId);
     return res.send({

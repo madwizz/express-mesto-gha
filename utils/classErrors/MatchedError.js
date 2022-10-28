@@ -5,4 +5,3 @@ class MatchedError extends Error {
   }
 }
 module.exports = MatchedError;
-
