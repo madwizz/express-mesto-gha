@@ -41,10 +41,10 @@ module.exports.createUser = async (req, res, next) => {
       name, about, avatar, email, password,
     } = req.body;
     const hash = await bcrypt.hash(password, 10);
-    const user = await User.create({
+    await User.create({
       name, about, avatar, email, password: hash,
     });
-    res.send({ ...user, password });
+    res.send({ name, about, avatar, email, password });
   } catch (err) {
     if (err.code === 11000) {
       next(new MatchedError('User with that email already exists'));
