@@ -30,10 +30,10 @@ module.exports.deleteCard = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId);
     if (!card) {
-      return new NotFoundError('Card is not found');
+      throw new NotFoundError('Card is not found');
     }
     if (card.owner.toString() !== req.params.cardId) {
-      return new ForbiddenError('It is not allowed to delete cards which you do not own');
+      throw new ForbiddenError('It is not allowed to delete cards which you do not own');
     }
     await Card.findByIdAndRemove(req.params.cardId);
     return res.send({
@@ -41,12 +41,10 @@ module.exports.deleteCard = async (req, res, next) => {
     });
   } catch (err) {
     if (err.name === 'CastError') {
-      next(new BadRequestError('Card _id is not valid'));
-    } else {
-      next(err);
+      return next(new BadRequestError('Card _id is not valid'));
     }
+    return next(err);
   }
-  return null;
 };
 
 const handleCardLike = async (req, res, options, next) => {
@@ -58,17 +56,15 @@ const handleCardLike = async (req, res, options, next) => {
       { new: true },
     );
     if (!cardUpdate) {
-      return new NotFoundError('Card is not found');
+      throw new NotFoundError('Card is not found');
     }
     return res.send(cardUpdate);
   } catch (err) {
     if (err.name === 'CastError') {
-      next(new BadRequestError('Invalid data is received: wrong _id'));
-    } else {
-      next(err);
+      return next(new BadRequestError('Invalid data is received: wrong _id'));
     }
+    return next(err);
   }
-  return null;
 };
 
 module.exports.likeCard = (req, res) => {

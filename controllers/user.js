@@ -107,7 +107,6 @@ module.exports.updateUserAvatar = async (req, res, next) => {
 
 module.exports.getMyInfo = async (req, res, next) => {
   try {
-    console.log(req.user._id);
     const user = await User.findOne({ _id: req.user._id });
     return res.send(user);
   } catch (err) {
