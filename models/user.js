@@ -44,22 +44,17 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.statics.findUser = async (email, password) => {
+  let user;
   try {
-    const user = await this.findOne({ email }).select('+password');
-    if (!user) {
-      return Promise.reject(new UnauthorizedError('Wrong email or password'));
-    }
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return Promise.reject(new UnauthorizedError('Wrong email or password'));
-    }
-    if (user && match) {
-      return user;
-    }
+    user = await this.findOne({ email }).select('+password');
   } catch (err) {
-    console.log(err);
+    return Promise.reject(new UnauthorizedError('Wrong email: this email does not exist'));
   }
-  return null;
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    return Promise.reject(new UnauthorizedError('Wrong password'));
+  }
+  return user;
 };
 
 module.exports = mongoose.model('user', userSchema);
