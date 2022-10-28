@@ -24,10 +24,9 @@ module.exports.createCard = async (req, res, next) => {
   } catch (err) {
     if (err.name === 'ValidationError') {
       next(new BadRequestError('Invalid data is received'));
+    } else {
+      next(err);
     }
-    res.status(DEFAULT_ERROR_CODE).json({
-      message: 'Failed to create card',
-    });
   }
 };
 

@@ -49,7 +49,7 @@ module.exports.createUser = async (req, res, next) => {
     if (err.code === 11000) {
       next(new MatchedError('User with that email already exists'));
     } else if (err.name === 'ValidationError') {
-      next(new BadRequestError('Invalid data is received'));
+      next(new BadRequestError('Invalid data is received: validation error'));
     } else {
       next(err);
     }
@@ -78,9 +78,7 @@ module.exports.updateUserInfo = async (req, res, next) => {
     res.send(userInfoUpdate);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      next(new BadRequestError('Invalid data is received'));
-    } else if (err.name === 'CastError') {
-      next(new BadRequestError('User _id is not correct'));
+      next(new BadRequestError(err.message));
     } else {
       next(err);
     }
@@ -101,7 +99,7 @@ module.exports.updateUserAvatar = async (req, res, next) => {
     res.send(avatarUpdate);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      next(new BadRequestError('Invalid data is received'));
+      next(new BadRequestError(err.message));
     } else {
       next(err);
     }
