@@ -47,14 +47,14 @@ module.exports.deleteCard = async (req, res, next) => {
   }
 };
 
-const handleCardLike = async (req, res, options, next) => {
+const handleCardLike = async (req, res, next, options) => {
   try {
     const action = options.addLike ? '$addToSet' : '$pull';
     const cardUpdate = await Card.findByIdAndUpdate(
       req.params.cardId,
       { [action]: { likes: req.user._id } },
       { new: true },
-    );
+    ).orFail(new NotFoundError('Card is not found'));
     if (!cardUpdate) {
       throw new NotFoundError('Card is not found');
     }
@@ -67,10 +67,10 @@ const handleCardLike = async (req, res, options, next) => {
   }
 };
 
-module.exports.likeCard = (req, res) => {
-  handleCardLike(req, res, { addLike: true });
+module.exports.likeCard = (req, res, next) => {
+  handleCardLike(req, res, next, { addLike: true });
 };
 
-module.exports.dislikeCard = (req, res) => {
-  handleCardLike(req, res, { addLike: false });
+module.exports.dislikeCard = (req, res, next) => {
+  handleCardLike(req, res, next, { addLike: false });
 };
