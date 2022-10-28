@@ -13,7 +13,7 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => validator.isURL(v, { protocols: ['http', 'https'], require_protocol: true}),
+      validator: (v) => validator.isURL(v, { protocols: ['http', 'https'], require_protocol: true }),
       message: ({ value }) => `${value} - URL address is not valid. Expected URL address format: http(s)://(www).site.com`,
     },
   },
