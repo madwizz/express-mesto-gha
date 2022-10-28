@@ -44,7 +44,7 @@ module.exports.createUser = async (req, res, next) => {
     const user = await User.create({
       name, about, avatar, email, password: hash,
     });
-    res.send(user);
+    res.send({ ...user, password });
   } catch (err) {
     if (err.code === 11000) {
       next(new MatchedError('User with that email already exists'));

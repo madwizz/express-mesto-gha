@@ -1,7 +1,7 @@
 const express = require('express');
 const mestodb = require('mongoose');
 const bodyParser = require('body-parser');
-const { errors } = require('celebrate');
+// const { errors } = require('celebrate');
 
 const userRoutes = require('./routes/userRoutes');
 const cardRoutes = require('./routes/cardRoutes');
@@ -28,7 +28,7 @@ app.use('/cards', cardRoutes);
 app.use('*', () => {
   throw new NotFoundError('URL is not found. Check URL and request method');
 });
-app.use(errors());
+// app.use(errors());
 app.use(errorHandler);
 
 app.listen(PORT, () => {
