@@ -5,12 +5,14 @@ const { SECRET_JWT } = require('../utils/constants');
 module.exports = (req, res, next) => {
   let payload;
   try {
-    const token = req.authorization.split(' ')[1];
+    const token = req.headers.authorization.split(' ')[1];
     if (!token) {
       return next(new UnauthorizedError('Authorization is required'));
     }
     payload = jwt.verify(token, SECRET_JWT);
+    console.log(payload);
   } catch (err) {
+    console.log(err);
     return next(new UnauthorizedError('Authorization is required'));
   }
   req.user = payload;

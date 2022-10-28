@@ -63,7 +63,6 @@ userSchema.statics.findUser = async function (email, password) {
   try {
     user = await this.findOne({ email }).select('+password');
   } catch (err) {
-    console.log(err);
     return Promise.reject(new UnauthorizedError('Wrong email: this email does not exist'));
   }
 
@@ -73,7 +72,6 @@ userSchema.statics.findUser = async function (email, password) {
       throw new UnauthorizedError('Wrong password');
     }
   } catch (err) {
-    console.log(err);
     return Promise.reject(new UnauthorizedError('Wrong password'));
   }
   return user;
