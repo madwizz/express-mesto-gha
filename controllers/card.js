@@ -26,41 +26,12 @@ module.exports.createCard = async (req, res, next) => {
   }
 };
 
-// module.exports.deleteCard = async (req, res, next) => {
-//   try {
-//     const card = await Card.findById(req.params.cardId);
-//     if (!card) {
-//       throw new NotFoundError('Card is not found');
-//     }
-//     if (card.owner.toString() !== req.params.cardId) {
-//       throw new ForbiddenError('It is not allowed to delete cards which you do not own');
-//     }
-//     await Card.findByIdAndRemove(req.params.cardId);
-//     return res.send({
-//       message: 'Card is deleted',
-//     });
-//   } catch (err) {
-//     if (err.name === 'CastError') {
-//       return next(new BadRequestError('Card _id is not valid'));
-//     }
-//     return next(err);
-//   }
-// };
-module.exports.doesCardExist = async (req, res, next) => {
-  try {
-    const card = await Card.findById(req.params.cardId);
-    if (!card) {
-      throw new NotFoundError('Card was not found');
-    }
-  } catch (err) {
-    next(err);
-  }
-  next();
-};
-
 module.exports.deleteCard = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId);
+    if (!card) {
+      throw new NotFoundError('Card is not found');
+    }
     if (req.user._id === card.owner.toString()) {
       await Card.findByIdAndDelete(req.params.cardId);
       res.send({ message: 'Card has been deleted' });
@@ -68,7 +39,10 @@ module.exports.deleteCard = async (req, res, next) => {
       throw new ForbiddenError('It is not allowed to delete cards which you did not create');
     }
   } catch (err) {
-    next(err);
+    if (err.name === 'CastError') {
+      return next(new BadRequestError('Card _id is not valid'));
+    }
+    return next(err);
   }
 };
 
