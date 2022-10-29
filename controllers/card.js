@@ -34,10 +34,9 @@ module.exports.deleteCard = async (req, res, next) => {
     }
     if (req.user._id === card.owner.toString()) {
       await Card.findByIdAndDelete(req.params.cardId);
-      res.send({ message: 'Card has been deleted' });
-    } else {
-      throw new ForbiddenError('It is not allowed to delete cards which you did not create');
+      return res.send({ message: 'Card has been deleted' });
     }
+    throw new ForbiddenError('It is not allowed to delete cards which you did not create');
   } catch (err) {
     if (err.name === 'CastError') {
       return next(new BadRequestError('Card _id is not valid'));
