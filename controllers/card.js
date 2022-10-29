@@ -46,6 +46,17 @@ module.exports.createCard = async (req, res, next) => {
 //     return next(err);
 //   }
 // };
+module.exports.doesCardExist = async (req, res, next) => {
+  try {
+    const card = await Card.findById(req.params.cardId);
+    if (!card) {
+      throw new NotFoundError('Card was not found');
+    }
+  } catch (err) {
+    next(err);
+  }
+  next();
+};
 
 module.exports.deleteCard = async (req, res, next) => {
   try {
