@@ -6,7 +6,6 @@ const MatchedError = require('../utils/classErrors/MatchedError');
 const NotFoundError = require('../utils/classErrors/NotFoundError');
 
 const { SECRET_JWT } = require('../utils/constants');
-const { MONGO_DB_CODE } = require('../utils/errors');
 
 module.exports.getUsers = async (req, res, next) => {
   try {
@@ -46,7 +45,7 @@ module.exports.createUser = async (req, res, next) => {
       name, about, avatar, email,
     });
   } catch (err) {
-    if (err.code === MONGO_DB_CODE) {
+    if (err.code === 11000) {
       next(new MatchedError('User with that email already exists'));
     } else if (err.name === 'ValidationError') {
       next(new BadRequestError('Invalid data is received: validation error'));
