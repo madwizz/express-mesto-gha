@@ -1,3 +1,16 @@
+This project is a backend for a photo sharing application called Mesto. It's built using Node.js and Express.js and uses MongoDB as its database. The API supports user authentication, CRUD operations for users and cards, and liking and disliking cards. It also includes error handling and validation for incoming data. The project demonstrates proficiency in building a RESTful API with Node.js and Express.js, integrating a MongoDB database, and implementing authentication and authorization.
+
+Tech used:
+Node.js
+Express.js
+MongoDB
+Mongoose ODM
+Git/GitHub
+ESLint
+Nodemon
+Postman
+
+
 [![Tests](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-13-sprint.yml) [![Tests](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
 # Проект Mesto фронтенд + бэкенд
 
